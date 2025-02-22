@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_video_call/page/home_page.dart';
-import 'package:flutter_video_call/page/login_page.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
-class PageRouteNames {
-  static const String login = '/login';
-  static const String home = '/home_page';
-}
-
-Map<String, WidgetBuilder> routes = {
-  PageRouteNames.login: (context) => const LoginPage(),
-  PageRouteNames.home: (context) => const ZegoUIKitPrebuiltCallMiniPopScope(
-        child: HomePage(),
-      ),
-};
 
 class UserInfo {
   String id = '';

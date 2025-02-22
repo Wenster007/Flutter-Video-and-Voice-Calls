@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:flutter_video_call/constants/constants.dart';
-import 'package:flutter_video_call/services/login_service.dart';
+import 'package:flutter_video_call/page/login_page.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+
+import '../constants/constants.dart';
+import '../services/login_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -78,11 +80,11 @@ class HomePageState extends State<HomePage> {
         onPressed: () {
           logout().then((value) {
             onUserLogout();
-            Navigator.pushNamed(
-              // ignore: use_build_context_synchronously
-              context,
-              PageRouteNames.login,
-            );
+            if (mounted) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginPage(),)
+              );
+            }
           });
         },
       ),
@@ -177,20 +179,21 @@ class HomePageState extends State<HomePage> {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: inviteeUsersIDTextCtrl,
       builder: (context, inviteeUserID, _) {
-        final invitees =
-            getInvitesFromTextCtrl(inviteeUsersIDTextCtrl.text.trim());
+        final invitees = getInvitesFromTextCtrl(inviteeUsersIDTextCtrl.text.trim());
+
+        print('Building call button with invitees: $invitees'); // Debug print
 
         return ZegoSendCallInvitationButton(
           isVideoCall: isVideoCall,
           invitees: invitees,
-          resourceID: 'zego_data',
+          resourceID: 'zego_cloud',
           iconSize: const Size(40, 40),
           buttonSize: const Size(50, 50),
-          onPressed: onCallFinished,
         );
       },
     );
   }
+
 
 // This method displays an appropriate error or success message after sending a call invitation, providing feedback to the user. If the call invitation was successful, the method displays a success message. If the call invitation failed, the method displays an error message with the user IDs that caused the failure. The method also displays the error code and message if they are provided.
 
@@ -231,19 +234,25 @@ class HomePageState extends State<HomePage> {
     }
   }
 }
-
 // function parses the invitee IDs from the input and creates user objects for the call invitation.ZegoUIKitUser is a class that represents a user in the ZegoUIKit SDK. The function creates a list of ZegoUIKitUser objects from the invitee IDs entered in the text field. The function splits the invitee IDs by commas and creates a ZegoUIKitUser object for each ID. The function then adds the ZegoUIKitUser objects to a list and returns the list.
 
 List<ZegoUIKitUser> getInvitesFromTextCtrl(String textCtrlText) {
   final invitees = <ZegoUIKitUser>[];
   final inviteeIDs = textCtrlText.trim().replaceAll('，', '');
+
+  print('Processing invitees: $inviteeIDs'); // Add debug print
+
   inviteeIDs.split(',').forEach((inviteeUserID) {
     if (inviteeUserID.isEmpty) return;
+
+    print('Adding invitee: $inviteeUserID'); // Add debug print
 
     invitees.add(ZegoUIKitUser(
       id: inviteeUserID,
       name: 'user_$inviteeUserID',
     ));
   });
+
+  print('Final invitees list: $invitees'); // Add debug print
   return invitees;
 }

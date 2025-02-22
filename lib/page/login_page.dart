@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_video_call/services/login_service.dart';
+import 'package:flutter_video_call/page/home_page.dart';
 import 'package:flutter_video_call/utils/utils.dart';
-import '../constants/constants.dart';
+
+import '../services/login_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -93,19 +94,21 @@ class LoginPageState extends State<LoginPage> {
       onPressed: _userIDTextCtrl.text.isEmpty
           ? null
           : () async {
-              login(
+              await login(
                 userID: _userIDTextCtrl.text,
                 userName: 'user_${_userIDTextCtrl.text}',
               ).then((value) {
                 onUserLogin();
-
-                Navigator.pushNamed(
-                  context,
-                  PageRouteNames.home,
-                );
+                if (mounted) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ));
+                }
               });
             },
-      child: const Text('Sign In', style: textStyle),
+      child: const Text(
+        'Sign In',
+      ),
     );
   }
 }
